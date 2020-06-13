@@ -28,12 +28,14 @@ MiddleErosion:
 
 
     ; nadpisanie bajtu
-    movbe r8, QWORD [rsi + rdx]
+    mov r8, QWORD [rsi + rdx]
+    bswap r8
 
     ; suma logiczna bajtow
     or rax, r8
 
     ; zapis bajtu
-    movbe QWORD [rsi + rdx], rax
+    bswap rax
+    mov QWORD [rsi + rdx], rax
 
 	ret
