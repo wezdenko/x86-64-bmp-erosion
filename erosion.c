@@ -5,11 +5,6 @@
 #include <memory.h>
 #include <math.h>
 
-// kompilowanie programu wymaga nastepujacych opcji:
-// -lm  ze wzgledu na sinus i cosinus
-// -m32 bo projekt powinien byc 32-bitowy (int = 4 bajty)
-// -fpack-struct  bo header (obrazu cz-bialego) ma miec 62 bajty
-
 #pragma pack(push, 1)
 typedef struct
 {
@@ -186,12 +181,12 @@ void FreeScreen(imgInfo* pInfo)
 }
 
 /****************************************************************************************/
-/*
-extern void RightEdgeErosion(unsigned char* pImg, unsigned char* pImgCopy, int byteNum1, int byteNum2);
+
+//extern void RightEdgeErosion(unsigned char* pImg, unsigned char* pImgCopy, int byteNum1, int byteNum2);
 
 extern void MiddleErosion(unsigned char* pImg, unsigned char* pImgCopy, int byteNum1, int byteNum2);
 
-extern void LeftEdgeErosion(unsigned char* pImg, unsigned char* pImgCopy, int byteNum1, int byteNum2);
+//extern void LeftEdgeErosion(unsigned char* pImg, unsigned char* pImgCopy, int byteNum1, int byteNum2);
 
 imgInfo* Erosion(imgInfo* pImg)
 {
@@ -205,6 +200,9 @@ imgInfo* Erosion(imgInfo* pImg)
 	// szerokosc w bajtach (bez bajtow wyrownujacych)
 	int byteWidth = (pImg->width + 7) >> 3;
 
+	MiddleErosion(pImg->pImg, pErodedImg->pImg, 0, 0);
+
+	/*
 	int i;
 	for (i = 0; i < byteSize; i++)
 	{
@@ -280,10 +278,10 @@ imgInfo* Erosion(imgInfo* pImg)
 			}
 		}
 	}
-
+	*/
 	return pErodedImg;
 }
-*/
+
 /****************************************************************************************/
 
 int main(int argc, char* argv[])
@@ -296,9 +294,9 @@ int main(int argc, char* argv[])
 
 	pInfo = readBMP("test32x32.bmp");
 
-	//pErodedImg = Erosion(pInfo);
+	pErodedImg = Erosion(pInfo);
 
-	saveBMP(pInfo, "result.bmp");
+	saveBMP(pErodedImg, "result.bmp");
 
 	FreeScreen(pErodedImg);
 	FreeScreen(pInfo);

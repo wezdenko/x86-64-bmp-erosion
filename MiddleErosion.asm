@@ -2,69 +2,33 @@ section	.text
 global  MiddleErosion
 
 MiddleErosion:
-	push ebp
-	mov	ebp, esp
 
     ; bajt pierwszy
-    ; obliczanie adresu bajtu
-    mov	eax, DWORD [ebp+8]
-    mov edx, DWORD [ebp+16]
-
-    add eax, edx
-    dec eax      ; wsk na bajt poprzedzajacy
-
-    ; wczytanie zawartosci trzech bajtow
-    mov dl, byte [eax]
-    shl edx, 8
-    mov dl, byte [eax+1]
-    shl edx, 8
-    mov dl, byte [eax+2]
-    shl edx, 8
-    push edx
+    ; wczytanie zawartosci 8 bajtow
+    movbe rax, QWORD [rdi + rdx]
 
     ; bajt drugi
-    ; obliczanie adresu bajtu
-    mov	eax, DWORD [ebp+8]
-    mov edx, DWORD [ebp+20]
+    ; wczytanie zawartosci 8 bajtow
+    movbe r8, QWORD [rdi + rcx]
 
-    add eax, edx
-    dec eax      ; wsk na bajt poprzedzajacy
-
-    ; wczytanie zawartosci trzech bajtow
-    mov dl, byte [eax]
-    shl edx, 8
-    mov dl, byte [eax+1]
-    shl edx, 8
-    mov dl, byte [eax+2]
-    shl edx, 8
-
-
-    pop eax ; pierwszy DWORD
-    ; edx - drugi DWORD
 
     ; erozja bajtow
-	or eax, edx
+	or rax, r8
 
-	shl edx, 1
-	or eax, edx
+	shl r8, 1
+	or rax, r8
 
-	shr edx, 2
-	or eax, edx
+	shr r8, 2
+	or rax, r8
 
-    shr eax, 16
 
-    ; obliczenie adresu do zapisu
-    mov edx, DWORD [ebp+12]
-    mov ecx, DWORD [ebp+16]
-
-    add edx, ecx
+    ; nadpisanie bajtu
+    movbe r8, QWORD [rsi + rdx]
 
     ; suma logiczna bajtow
-    mov cl, byte [edx]
-    or al, cl
+    or rax, r8
 
     ; zapis bajtu
-    mov [edx], al
+    movbe [rsi + rdx], rax
 
-	pop	ebp
 	ret
