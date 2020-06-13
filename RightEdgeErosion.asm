@@ -2,59 +2,38 @@ section	.text
 global  RightEdgeErosion
 
 RightEdgeErosion:
-	push ebp
-	mov	ebp, esp
 
     ; bajt pierwszy
-    ; obliczanie adresu bajtu
-    mov	eax, DWORD [ebp+8]
-    mov edx, DWORD [ebp+16]
-
-    add eax, edx
-	dec eax
-
-    ; wczytanie zawartosci dwoch bajtow
-    mov dh, byte [eax]
-    mov dl, byte [eax+1]
-    push dx
+    mov rax, QWORD [rdi + rdx]
 
     ; bajt drugi
-    ; obliczanie adresu bajtu
-    mov	eax, DWORD [ebp+8]
-    mov edx, DWORD [ebp+20]
+    mov r8, QWORD [rdi + rcx]
 
-    add eax, edx
-	dec eax
+    ; bajt do nadpisania
+    mov r9, QWORD [rsi + rdx]
 
-    ; wczytanie zawartosci dwoch bajtow
-    mov dh, byte [eax]
-    mov dl, byte [eax+1]
+    ; przestawienie bajtow na big endian
+    bswap rax
+    bswap r8
 
-
-    pop ax ; pierwszy WORD
-    ; dx - drugi WORD
 
     ; erozja bajtow
-	or ax, dx
+	or rax, r8
 
-	shl dx, 1
-	or ax, dx
+	shl r8, 1
+	or rax, r8
 
-	shr dx, 2
-	or ax, dx
+	shr r8, 2
+	or rax, r8
 
-    ; obliczenie adresu do zapisu
-    mov edx, DWORD [ebp+12]
-    mov ecx, DWORD [ebp+16]
 
-    add edx, ecx
+    ; przestawienie bajtow na little endian
+    bswap rax
 
-    ; suma logiczna bajtow
-    mov cl, byte [edx]
-    or al, cl
+    ; suma logiczna bajtu do nadpisania
+    or rax, r9
 
     ; zapis bajtu
-    mov [edx], al
+    mov DWORD [rsi + rdx], eax
 
-	pop	ebp
 	ret

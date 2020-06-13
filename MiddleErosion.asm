@@ -3,13 +3,17 @@ global  MiddleErosion
 
 MiddleErosion:
 
+    dec rdx
+    dec rcx
+
     ; bajt pierwszy
-    ; wczytanie zawartosci 8 bajtow
     mov rax, QWORD [rdi + rdx]
 
     ; bajt drugi
-    ; wczytanie zawartosci 8 bajtow
     mov r8, QWORD [rdi + rcx]
+
+    ; bajt do nadpisania
+    mov r9, QWORD [rsi + rdx]
 
 
     ; przestawienie bajtow na big endian
@@ -27,15 +31,15 @@ MiddleErosion:
 	or rax, r8
 
 
-    ; nadpisanie bajtu
-    mov r8, QWORD [rsi + rdx]
-    bswap r8
+    ; przestawienie bajtow na little endian
+    bswap rax
 
-    ; suma logiczna bajtow
-    or rax, r8
+    ; suma logiczna bajtu do nadpisania
+    or rax, r9
 
     ; zapis bajtu
-    bswap rax
-    mov QWORD [rsi + rdx], rax
+    shr rax, 8
+    inc rdx
+    mov DWORD [rsi + rdx], eax
 
 	ret

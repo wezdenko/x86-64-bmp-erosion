@@ -200,7 +200,29 @@ imgInfo* Erosion(imgInfo* pImg)
 	// szerokosc w bajtach (bez bajtow wyrownujacych)
 	int byteWidth = (pImg->width + 7) >> 3;
 
-	MiddleErosion(pImg->pImg, pErodedImg->pImg, 0, 0);
+	
+	if ((pImg->rowByteSize % 8) == 0)
+	{
+		int i;
+		for (i = 0; i < byteSize; i += 4)
+		{
+			printf("%d\n", i);
+			MiddleErosion(pImg->pImg, pErodedImg->pImg, i, i);
+
+
+			// not upper edge
+			if (i >= pImg->rowByteSize)
+				MiddleErosion(pImg->pImg, pErodedImg->pImg, i, i - pImg->rowByteSize);
+
+
+			// not bottom edge
+			if (i <= (byteSize - pImg->rowByteSize))
+				MiddleErosion(pImg->pImg, pErodedImg->pImg, i, i + pImg->rowByteSize);
+
+			printf("%d\n", i);
+		}
+	}
+
 
 	/*
 	int i;
@@ -292,7 +314,9 @@ int main(int argc, char* argv[])
 
 	printf("Size of bmpHeader = %ld\n", sizeof(bmpHdr));
 
-	pInfo = readBMP("test32x32.bmp");
+	pInfo = readBMP("test64x64.bmp");
+
+	printf("%d\n", pInfo->rowByteSize);
 
 	pErodedImg = Erosion(pInfo);
 
