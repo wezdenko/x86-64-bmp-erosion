@@ -5,11 +5,16 @@ MiddleErosion:
 
     ; bajt pierwszy
     ; wczytanie zawartosci 8 bajtow
-    movbe rax, QWORD [rdi + rdx]
+    mov rax, QWORD [rdi + rdx]
 
     ; bajt drugi
     ; wczytanie zawartosci 8 bajtow
-    movbe r8, QWORD [rdi + rcx]
+    mov r8, QWORD [rdi + rcx]
+
+
+    ; przestawienie bajtow na big endian
+    bswap rax
+    bswap r8
 
 
     ; erozja bajtow
@@ -29,6 +34,6 @@ MiddleErosion:
     or rax, r8
 
     ; zapis bajtu
-    movbe [rsi + rdx], rax
+    movbe QWORD [rsi + rdx], rax
 
 	ret
