@@ -3,6 +3,9 @@ global  RightEdgeErosion
 
 RightEdgeErosion:
 
+    dec rdx
+    dec rcx
+
     ; bajt pierwszy
     mov rax, QWORD [rdi + rdx]
 
@@ -15,6 +18,10 @@ RightEdgeErosion:
     ; przestawienie bajtow na big endian
     bswap rax
     bswap r8
+
+    ; zaslonienie bajtow za krawedzia obrazka
+    and rax, 0xFFFFFFFF
+    and r8, 0xFFFFFFFF
 
 
     ; erozja bajtow
@@ -34,6 +41,8 @@ RightEdgeErosion:
     or rax, r9
 
     ; zapis bajtu
+    shr rax, 8
+    inc rdx
     mov DWORD [rsi + rdx], eax
 
 	ret

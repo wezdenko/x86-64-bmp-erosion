@@ -182,65 +182,43 @@ void FreeScreen(imgInfo* pInfo)
 
 /****************************************************************************************/
 
-//extern void RightEdgeErosion(unsigned char* pImg, unsigned char* pImgCopy, int byteNum1, int byteNum2);
+extern void RightEdgeErosion(unsigned char* pImg, unsigned char* pImgCopy, int byteNum1, int byteNum2);
 
 extern void MiddleErosion(unsigned char* pImg, unsigned char* pImgCopy, int byteNum1, int byteNum2);
 
-//extern void LeftEdgeErosion(unsigned char* pImg, unsigned char* pImgCopy, int byteNum1, int byteNum2);
+extern void LeftEdgeErosion(unsigned char* pImg, unsigned char* pImgCopy, int byteNum1, int byteNum2);
 
 imgInfo* Erosion(imgInfo* pImg)
 {
 	imgInfo* pErodedImg;
-	int byteColumn;
+	int columnDWORD;
 
 	pErodedImg = InitScreen(pImg->width, pImg->height);
 
 	// rozmiar obrazka w bajtach
 	int byteSize = pImg->height * pImg->rowByteSize;
-	// szerokosc w bajtach (bez bajtow wyrownujacych)
-	int byteWidth = (pImg->width + 7) >> 3;
-
-	
-	if ((pImg->rowByteSize % 8) == 0)
-	{
-		int i;
-		for (i = 0; i < byteSize; i += 4)
-		{
-			printf("%d\n", i);
-			MiddleErosion(pImg->pImg, pErodedImg->pImg, i, i);
+	// rozmiar obrazka w 4 * bajt
+	int sizeDWORD = byteSize >> 2;
+	// szerokosc w 4 * bajt
+	int widthDWORD = pImg->rowByteSize >> 2;
 
 
-			// not upper edge
-			if (i >= pImg->rowByteSize)
-				MiddleErosion(pImg->pImg, pErodedImg->pImg, i, i - pImg->rowByteSize);
-
-
-			// not bottom edge
-			if (i <= (byteSize - pImg->rowByteSize))
-				MiddleErosion(pImg->pImg, pErodedImg->pImg, i, i + pImg->rowByteSize);
-
-			printf("%d\n", i);
-		}
-	}
-
-
-	/*
 	int i;
-	for (i = 0; i < byteSize; i++)
+	for (i = 0; i < byteSize; i+=4)
 	{
-		byteColumn = i % pImg->rowByteSize;
+		columnDWORD = (i >> 2) % widthDWORD;
 		
 		// upper edge
 		if (i < pImg->rowByteSize)
 		{
 			// left edge
-			if (byteColumn == 0)
+			if (columnDWORD == 0)
 			{
 				LeftEdgeErosion(pImg->pImg, pErodedImg->pImg, i, i);
 				LeftEdgeErosion(pImg->pImg, pErodedImg->pImg, i, i + pImg->rowByteSize);
 			}
 			// right edge
-			else if (byteColumn == (byteWidth - 1))
+			else if (columnDWORD == (widthDWORD - 1))
 			{
 				RightEdgeErosion(pImg->pImg, pErodedImg->pImg, i, i);
 				RightEdgeErosion(pImg->pImg, pErodedImg->pImg, i, i + pImg->rowByteSize);
@@ -256,13 +234,13 @@ imgInfo* Erosion(imgInfo* pImg)
 		else if (i > (byteSize - pImg->rowByteSize))
 		{
 			// left edge
-			if (byteColumn == 0)
+			if (columnDWORD == 0)
 			{
 				LeftEdgeErosion(pImg->pImg, pErodedImg->pImg, i, i);
 				LeftEdgeErosion(pImg->pImg, pErodedImg->pImg, i, i - pImg->rowByteSize);
 			}
 			// right edge
-			else if (byteColumn == (byteWidth - 1))
+			else if (columnDWORD == (widthDWORD - 1))
 			{
 				RightEdgeErosion(pImg->pImg, pErodedImg->pImg, i, i);
 				RightEdgeErosion(pImg->pImg, pErodedImg->pImg, i, i - pImg->rowByteSize);
@@ -278,14 +256,14 @@ imgInfo* Erosion(imgInfo* pImg)
 		else
 		{
 			// left edge
-			if (byteColumn == 0)
+			if (columnDWORD == 0)
 			{
 				LeftEdgeErosion(pImg->pImg, pErodedImg->pImg, i, i);
 				LeftEdgeErosion(pImg->pImg, pErodedImg->pImg, i, i + pImg->rowByteSize);
 				LeftEdgeErosion(pImg->pImg, pErodedImg->pImg, i, i - pImg->rowByteSize);
 			}
 			// right edge
-			else if (byteColumn == (byteWidth - 1))
+			else if (columnDWORD == (widthDWORD - 1))
 			{
 				RightEdgeErosion(pImg->pImg, pErodedImg->pImg, i, i);
 				RightEdgeErosion(pImg->pImg, pErodedImg->pImg, i, i + pImg->rowByteSize);
@@ -300,7 +278,7 @@ imgInfo* Erosion(imgInfo* pImg)
 			}
 		}
 	}
-	*/
+
 	return pErodedImg;
 }
 
@@ -314,7 +292,7 @@ int main(int argc, char* argv[])
 
 	printf("Size of bmpHeader = %ld\n", sizeof(bmpHdr));
 
-	pInfo = readBMP("test64x64.bmp");
+	pInfo = readBMP("test2.bmp");
 
 	printf("%d\n", pInfo->rowByteSize);
 
