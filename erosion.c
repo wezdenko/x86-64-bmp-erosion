@@ -188,6 +188,9 @@ extern void MiddleErosion(unsigned char* pImg, unsigned char* pImgCopy, int byte
 
 extern void LeftEdgeErosion(unsigned char* pImg, unsigned char* pImgCopy, int byteNum1, int byteNum2);
 
+extern void FourBytesErosion(unsigned char* pImg, unsigned char* pImgCopy, int byteNum1, int byteNum2);
+
+
 imgInfo* Erosion(imgInfo* pImg)
 {
 	imgInfo* pErodedImg;
@@ -202,7 +205,36 @@ imgInfo* Erosion(imgInfo* pImg)
 	// szerokosc w 4 * bajt
 	int widthDWORD = pImg->rowByteSize >> 2;
 
-
+	// przypadek gdy wielkosc wiersza w obrazku wynosi 4 bajty, czyli najmniej
+	if (pImg->rowByteSize == 4)
+	{
+		int i;
+		for (i = 0; i < byteSize; i+=4)
+		{
+			// upper edge
+			if (i < pImg->rowByteSize)
+			{
+				FourBytesErosion(pImg->pImg, pErodedImg->pImg, i, i);
+				FourBytesErosion(pImg->pImg, pErodedImg->pImg, i, i + pImg->rowByteSize);
+			}
+			// bottom edge
+			else if (i > (byteSize - pImg->rowByteSize))
+			{
+				FourBytesErosion(pImg->pImg, pErodedImg->pImg, i, i);
+				FourBytesErosion(pImg->pImg, pErodedImg->pImg, i, i - pImg->rowByteSize);
+			}
+			// middle
+			else
+			{
+				FourBytesErosion(pImg->pImg, pErodedImg->pImg, i, i);
+				FourBytesErosion(pImg->pImg, pErodedImg->pImg, i, i + pImg->rowByteSize);
+				FourBytesErosion(pImg->pImg, pErodedImg->pImg, i, i - pImg->rowByteSize);
+			}
+		}
+		return pErodedImg;
+	}
+	
+	// gdy wielkosc wiersza obrazka jest wieksza niz 4 bajty
 	int i;
 	for (i = 0; i < byteSize; i+=4)
 	{
@@ -278,7 +310,7 @@ imgInfo* Erosion(imgInfo* pImg)
 			}
 		}
 	}
-
+	
 	return pErodedImg;
 }
 
@@ -291,10 +323,14 @@ int main(int argc, char* argv[])
 
 
 	printf("Size of bmpHeader = %ld\n", sizeof(bmpHdr));
+	
+	if (sizeof(bmpHdr) != 62)
+	{
+		printf("Change compilation options so as bmpHdr struct size is 62 bytes.\n");
+		return 1;
+	}
 
-	pInfo = readBMP("test2.bmp");
-
-	printf("%d\n", pInfo->rowByteSize);
+	pInfo = readBMP("test.bmp");
 
 	pErodedImg = Erosion(pInfo);
 

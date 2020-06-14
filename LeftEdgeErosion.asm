@@ -3,13 +3,13 @@ global  LeftEdgeErosion
 
 LeftEdgeErosion:
 
-    ; bajt pierwszy
+    ; pierwsza osemka bajtow
     mov rax, QWORD [rdi + rdx]
 
-    ; bajt drugi
+    ; druga osemka bajtow
     mov r8, QWORD [rdi + rcx]
 
-    ; bajt do nadpisania
+    ; bajty do nadpisania
     mov r9, QWORD [rsi + rdx]
 
     ; przestawienie bajtow na big endian
@@ -33,7 +33,7 @@ LeftEdgeErosion:
     ; suma logiczna bajtu do nadpisania
     or rax, r9
 
-    ; zapis bajtu
+    ; zapis 4 bajtow
     mov DWORD [rsi + rdx], eax
 
 	ret

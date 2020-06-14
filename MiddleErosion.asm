@@ -6,13 +6,13 @@ MiddleErosion:
     dec rdx
     dec rcx
 
-    ; bajt pierwszy
+    ; pierwsza osemka bajtow
     mov rax, QWORD [rdi + rdx]
 
-    ; bajt drugi
+    ; druga osemka bajtow
     mov r8, QWORD [rdi + rcx]
 
-    ; bajt do nadpisania
+    ; bajty do nadpisania
     mov r9, QWORD [rsi + rdx]
 
 
@@ -37,7 +37,7 @@ MiddleErosion:
     ; suma logiczna bajtu do nadpisania
     or rax, r9
 
-    ; zapis bajtu
+    ; zapis 4 bajtow
     shr rax, 8
     inc rdx
     mov DWORD [rsi + rdx], eax

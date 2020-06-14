@@ -6,22 +6,23 @@ RightEdgeErosion:
     dec rdx
     dec rcx
 
-    ; bajt pierwszy
+    ; pierwsza osemka bajtow
     mov rax, QWORD [rdi + rdx]
 
-    ; bajt drugi
+    ; druga osemka bajtow
     mov r8, QWORD [rdi + rcx]
 
-    ; bajt do nadpisania
+    ; bajty do nadpisania
     mov r9, QWORD [rsi + rdx]
+
+    ; zaslonienie bajtow za krawedzia obrazka
+    mov r10, 0xFFFFFFFFFF
+    and rax, r10
+    and r8, r10
 
     ; przestawienie bajtow na big endian
     bswap rax
     bswap r8
-
-    ; zaslonienie bajtow za krawedzia obrazka
-    and rax, 0xFFFFFFFF
-    and r8, 0xFFFFFFFF
 
 
     ; erozja bajtow
@@ -40,7 +41,7 @@ RightEdgeErosion:
     ; suma logiczna bajtu do nadpisania
     or rax, r9
 
-    ; zapis bajtu
+    ; zapis 4 bajtow
     shr rax, 8
     inc rdx
     mov DWORD [rsi + rdx], eax
